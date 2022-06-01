@@ -1,0 +1,21 @@
+name: my-staging-biome # Required for identifying this biome
+aws_profile: my_staging_aws_profile # Will set the AWS environment vars
+environment: # Additional environment vars to load in
+  ENVIRONMENT: staging
+  MY_USEFUL_ENV: "A value I need"
+  MY_OTHER_ENV: "Another value I need"
+  MY_AWS_SECRET_ENV:
+    secret_arn: "{{ARN}}"
+    secret_json_key: "my_super_secret_key"
+
+---
+
+name: my-production-biome
+aws_profile: my_production_aws_profile
+environment:
+  ENVIRONMENT: production
+  MY_USEFUL_ENV: "A value I need"
+  MY_OTHER_ENV: "Another value I need"
+  MY_AWS_SECRET_ENV:
+    secret_arn: "{{OTHER_ARN}}"
+    secret_json_key: "my_super_secret_key"
