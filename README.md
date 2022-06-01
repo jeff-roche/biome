@@ -57,6 +57,9 @@ $ onstaging ./bin/ci/deploy-service.sh
 ```
 
 ## Future Plans
-- Encrypted environment variables via [dragoman](https://github.com/meltwater/dragoman)
+- Implement goreleaser for binary building
+    - Use semantic versioning
+- Build a Drone CI/CD pipeline
 - Loading Environment variables from a .env file
+- Encrypted environment variables via [dragoman](https://github.com/meltwater/dragoman)
 - Potentially switching to [cobra](https://github.com/spf13/cobra) for the cli
