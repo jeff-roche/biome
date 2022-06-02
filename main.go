@@ -2,31 +2,17 @@ package main
 
 import (
 	"flag"
-	"fmt"
 	"log"
 	"os"
 	"os/exec"
 
 	"github.com/jeff-roche/biome/parser"
-
-	_ "embed"
 )
 
-//go:generate bash -c "echo -n $VERSION > version.txt"
-//go:embed version.txt
-var version string
-
 func main() {
-	vflag := flag.Bool("version", false, "display the release version of this tool")
 	biomeName := flag.String("b", "", "[Required] The name of the biome to use")
 
 	flag.Parse()
-
-	// If they specified -v, just print the version
-	if *vflag {
-		fmt.Println(version)
-		return
-	}
 
 	// Fetch the command they want to run
 	cmds := flag.Args()
