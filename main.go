@@ -10,7 +10,7 @@ import (
 	"github.com/jeff-roche/biome/parser"
 )
 
-var version string
+var Version string
 
 func main() {
 	vflag := flag.Bool("version", false, "display the release version of this tool")
@@ -20,7 +20,7 @@ func main() {
 
 	// If they specified -v, just print the version
 	if *vflag {
-		fmt.Println(version)
+		fmt.Println(Version)
 		return
 	}
 
