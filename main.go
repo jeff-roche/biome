@@ -2,6 +2,7 @@ package main
 
 import (
 	"flag"
+	"fmt"
 	"log"
 	"os"
 	"os/exec"
@@ -9,13 +10,22 @@ import (
 	"github.com/jeff-roche/biome/parser"
 )
 
+var version string
+
 func main() {
+	vflag := flag.Bool("version", false, "display the release version of this tool")
 	biomeName := flag.String("b", "", "[Required] The name of the biome to use")
 
 	flag.Parse()
 
-	cmds := flag.Args()
+	// If they specified -v, just print the version
+	if *vflag {
+		fmt.Println(version)
+		return
+	}
 
+	// Fetch the command they want to run
+	cmds := flag.Args()
 
 	if len(cmds) < 1 {
 		log.Fatalln("No command provided")

@@ -16,6 +16,8 @@ builds:
     goarch:
       - amd64
       - arm64
+    ldflags:
+      - -X "github.com/jeff-roche/biome/main.version={{.Env.VERSION}}"
 archives:
   - replacements:
       darwin: Darwin

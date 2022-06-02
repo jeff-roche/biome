@@ -21,3 +21,6 @@ vendor/
 # Go workspace file
 go.work
 dist/
+
+# version file
+version.txt

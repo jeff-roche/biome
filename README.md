@@ -57,8 +57,8 @@ $ onstaging ./bin/ci/deploy-service.sh
 ```
 
 ## Future Plans
-- Implement goreleaser for binary building
-    - Use semantic versioning
+- :white_check_mark: Implement goreleaser for binary building
+    - :white_check_mark: Use semantic versioning
 - Add a version command
 - Accept all valid yaml file extensions
 - Build a Drone CI/CD pipeline
