@@ -1,0 +1,7 @@
+#!/bin/bash
+
+echo "-- Cleaning test cache"
+go clean -testcache
+
+echo "-- Running tests"
+go test ./...
