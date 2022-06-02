@@ -14,54 +14,79 @@ import (
 	"gopkg.in/yaml.v3"
 )
 
-var LoadedBiome *config.BiomeConfig
-var BiomeConfigFileNames = []string{".biome.yaml", ".biome.yml"}
+var biomeConfigDefaultFileNames = []string{".biome.yaml", ".biome.yml"}
 
-// LoadBiome will find the nearest .biome.[yml|yaml] in this priority order
-//    - Current Directory
-//    - Home Directory
-func LoadBiome(biomeName string) error {
-	biomeConfigPaths := []string{
-		getCdFilePath(BiomeConfigFileNames[0]),
-		getCdFilePath(BiomeConfigFileNames[1]),
-		getHomeDirFilePath(BiomeConfigFileNames[0]),
-		getHomeDirFilePath(BiomeConfigFileNames[1]),
+// BiomeParser is the parent struct that handles loading and parsing biome configs
+type BiomeParser struct {
+	LoadedBiome          *config.BiomeConfig
+	BiomeConfigFileNames []string
+}
+
+// NewBiomeParser will generate a BiomeParser with the default configuration
+func NewBiomeParser() *BiomeParser {
+	return &BiomeParser{
+		LoadedBiome:          nil,
+		BiomeConfigFileNames: getDefaultBiomeConfigFiles(),
 	}
+}
 
-	// Reset the loaded biome
-	LoadedBiome = nil
+// LoadBiome will search for the biome in the files specified by
+//    BiomeParser.BiomeConfigFileNames
+func (p *BiomeParser) LoadBiome(biomeName string) error {
+	p.LoadedBiome = nil // Make sure we start from scratch
 
-	for _, fPath := range biomeConfigPaths {
-		err := tryLoadBiomeConfig(fPath, biomeName)
+	for _, fPath := range p.BiomeConfigFileNames {
+		// Does this file exist?
+		if !fileExists(fPath) {
+			continue
+		}
+
+		// Try to find the biome in that file
+		freader, err := os.Open(fPath)
 		if err != nil {
 			continue
 		}
 
-		// Was the biome loaded?
-		if LoadedBiome != nil {
+		if p.tryLoadBiomeFromFile(biomeName, freader) {
 			return nil
 		}
 	}
 
-	return fmt.Errorf("no biome configuration found")
+	return fmt.Errorf("unable to find the '%s' biome", biomeName)
 }
 
-func ConfigureBiome() error {
-	// Did the Biome get configured?
-	if LoadedBiome == nil {
-		return fmt.Errorf("biome not configured")
+// loadBiomeFile will load in a biome
+func (p *BiomeParser) tryLoadBiomeFromFile(biome string, fcontents io.Reader) bool {
+	buf := new(bytes.Buffer)
+	buf.ReadFrom(fcontents)
+
+	foundBiome, err := findBiomeInFileContents(buf.Bytes(), biome)
+	if err != nil || foundBiome == nil {
+		return false
+	}
+
+	p.LoadedBiome = foundBiome
+
+	return true
+}
+
+// ConfigureBiome will do any biome configuration needed from the loaded biome
+func (p BiomeParser) ConfigureBiome() error {
+	// Was the biome loaded in?
+	if p.LoadedBiome == nil {
+		return fmt.Errorf("biome not loaded")
 	}
 
 	// Does an AWS session need to be configured?
-	if LoadedBiome.AwsProfile != "" {
-		err := config.ConfigureAwsEnvironment(LoadedBiome.AwsProfile)
+	if p.LoadedBiome.AwsProfile != "" {
+		err := config.ConfigureAwsEnvironment(p.LoadedBiome.AwsProfile)
 		if err != nil {
-			return fmt.Errorf("unable to configure AWS environment '%s': %v", LoadedBiome.AwsProfile, err)
+			return fmt.Errorf("unable to configure AWS environment '%s': %v", p.LoadedBiome.AwsProfile, err)
 		}
 	}
 
 	// Get the environment variables
-	envs := LoadedBiome.GetEnvs()
+	envs := p.LoadedBiome.GetEnvs()
 
 	// Set the environment variables
 	for key, val := range envs {
@@ -71,30 +96,7 @@ func ConfigureBiome() error {
 	return nil
 }
 
-func tryLoadBiomeConfig(fPath string, biomeName string) error {
-	if !fileExists(fPath) {
-		return fmt.Errorf("could not find file '%s'", fPath)
-	}
-
-	// Slurp slurp
-	biomeConfigContents, err := os.ReadFile(fPath)
-	if err != nil {
-		return fmt.Errorf("unable to load the biome config '%s': %v", fPath, err)
-	}
-
-	// Loop over the file contents and try to parse out biomes
-	biome, err := findBiomeInFileContents(biomeConfigContents, biomeName)
-	if err != nil {
-		return fmt.Errorf("error searching for biome in '%s': %v", fPath, err)
-	}
-
-	// Save off the biome if we found it
-	if biome != nil {
-		LoadedBiome = biome
-	}
-
-	return nil
-}
+// HELPERS
 
 func findBiomeInFileContents(data []byte, biomeName string) (*config.BiomeConfig, error) {
 
@@ -120,6 +122,15 @@ func findBiomeInFileContents(data []byte, biomeName string) (*config.BiomeConfig
 	}
 
 	return nil, nil
+}
+
+func getDefaultBiomeConfigFiles() []string {
+	return []string{
+		getCdFilePath(biomeConfigDefaultFileNames[0]),
+		getCdFilePath(biomeConfigDefaultFileNames[1]),
+		getHomeDirFilePath(biomeConfigDefaultFileNames[0]),
+		getHomeDirFilePath(biomeConfigDefaultFileNames[1]),
+	}
 }
 
 func getCdFilePath(fname string) string {

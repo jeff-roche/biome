@@ -40,15 +40,16 @@ func main() {
 	}
 
 	// Load the Biome configuration
-	err := parser.LoadBiome(*biomeName)
+	biome := parser.NewBiomeParser()
+	err := biome.LoadBiome(*biomeName)
 	if err != nil {
 		log.Fatalf("unable to load biome '%s': %v", *biomeName, err)
 	}
 
 	// Setup and configure the Biome for command execution
-	err = parser.ConfigureBiome()
+	err = biome.ConfigureBiome()
 	if err != nil {
-		log.Fatalf("unable to configure biome '%s': %v", parser.LoadedBiome.Name, err)
+		log.Fatalf("unable to configure biome '%s': %v", biome.LoadedBiome.Name, err)
 	}
 
 	// Execute order 66
