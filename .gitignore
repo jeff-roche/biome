@@ -8,6 +8,7 @@ biome
 
 # Actual biome config (only meant to be exclude from this repo, should be in your own repos)
 .biome.yaml
+.biome.yml
 
 # Test binary, built with `go test -c`
 *.test
