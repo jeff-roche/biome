@@ -2,6 +2,7 @@ package main
 
 import (
 	"flag"
+	"fmt"
 	"log"
 	"os"
 	"os/exec"
@@ -9,10 +10,19 @@ import (
 	"github.com/jeff-roche/biome/parser"
 )
 
+var Version string = "v0.X.Y - installed via go install"
+
 func main() {
 	biomeName := flag.String("b", "", "[Required] The name of the biome to use")
+	versionFlag := flag.Bool("version", false, "Display the current version")
 
 	flag.Parse()
+
+	// If they want to print the version, just do that
+	if *versionFlag {
+		fmt.Println(Version)
+		return // We're done here
+	}
 
 	// Fetch the command they want to run
 	cmds := flag.Args()
