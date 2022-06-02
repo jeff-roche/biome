@@ -59,6 +59,8 @@ $ onstaging ./bin/ci/deploy-service.sh
 ## Future Plans
 - Implement goreleaser for binary building
     - Use semantic versioning
+- Add a version command
+- Accept all valid yaml file extensions
 - Build a Drone CI/CD pipeline
 - Implement some tests
 - Loading Environment variables from a .env file
