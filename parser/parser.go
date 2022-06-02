@@ -15,15 +15,17 @@ import (
 )
 
 var LoadedBiome *config.BiomeConfig
-const BiomeConfigFileName = ".biome.yaml"
+var BiomeConfigFileNames = []string{".biome.yaml", ".biome.yml"}
 
-// LoadBiome will find the nearest .biome.yaml in this priority order
+// LoadBiome will find the nearest .biome.[yml|yaml] in this priority order
 //    - Current Directory
 //    - Home Directory
 func LoadBiome(biomeName string) error {
 	biomeConfigPaths := []string{
-		getCdFilePath(),
-		getHomeDirFilePath(),
+		getCdFilePath(BiomeConfigFileNames[0]),
+		getCdFilePath(BiomeConfigFileNames[1]),
+		getHomeDirFilePath(BiomeConfigFileNames[0]),
+		getHomeDirFilePath(BiomeConfigFileNames[1]),
 	}
 
 	// Reset the loaded biome
@@ -95,7 +97,7 @@ func tryLoadBiomeConfig(fPath string, biomeName string) error {
 }
 
 func findBiomeInFileContents(data []byte, biomeName string) (*config.BiomeConfig, error) {
-	
+
 	// Setup the reader and decoder
 	r := bytes.NewReader(data)
 	decoder := yaml.NewDecoder(r)
@@ -120,22 +122,22 @@ func findBiomeInFileContents(data []byte, biomeName string) (*config.BiomeConfig
 	return nil, nil
 }
 
-func getCdFilePath() string {
+func getCdFilePath(fname string) string {
 	cdPath, err := os.Getwd()
 	if err != nil {
 		log.Fatalf("unable to get current directory: %v", err)
 	}
 
-	return path.Join(cdPath, BiomeConfigFileName)
+	return path.Join(cdPath, fname)
 }
 
-func getHomeDirFilePath() string {
+func getHomeDirFilePath(fname string) string {
 	currentUser, err := user.Current()
 	if err != nil {
 		log.Fatalf("unable to get current user: %v", err)
 	}
 
-	return path.Join(currentUser.HomeDir, BiomeConfigFileName)
+	return path.Join(currentUser.HomeDir, fname)
 }
 
 func fileExists(path string) bool {
