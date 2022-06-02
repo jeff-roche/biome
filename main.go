@@ -8,9 +8,13 @@ import (
 	"os/exec"
 
 	"github.com/jeff-roche/biome/parser"
+
+	_ "embed"
 )
 
-var Version string
+//go:generate bash -c "echo -n $VERSION > version.txt"
+//go:embed version.txt
+var version string
 
 func main() {
 	vflag := flag.Bool("version", false, "display the release version of this tool")
@@ -20,7 +24,7 @@ func main() {
 
 	// If they specified -v, just print the version
 	if *vflag {
-		fmt.Println(Version)
+		fmt.Println(version)
 		return
 	}
 

@@ -13,8 +13,10 @@ then
   git tag latest
   git push --tags
 
+  export VERSION=$NEXT
+
   # Do the release
-  VERSION=$NEXT goreleaser --rm-dist
+  goreleaser --rm-dist
 else
   echo "No new version detected. Skipping release."
 fi
