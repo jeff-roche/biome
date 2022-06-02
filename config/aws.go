@@ -50,12 +50,20 @@ func loadAwsConfig(profile *config.SharedConfig) (aws.Config, error) {
 		context.TODO(),
 		config.WithSharedConfigProfile(profile.Profile),
 		config.WithDefaultRegion(profile.Region),
+		config.WithAssumeRoleCredentialOptions(
+			func(aro *stscreds.AssumeRoleOptions) {
+				if profile.MFASerial != "" {
+					aro.SerialNumber = aws.String(profile.MFASerial) // The MFA device serial number
+					aro.TokenProvider = stscreds.StdinTokenProvider  // get the token from std in
+				}
+			},
+		),
 	)
-	
+
 	if err != nil {
 		return aws.Config{}, err
 	}
-	
+
 	return cfg, nil
 }
 
@@ -72,6 +80,8 @@ func setupAwsSession(cfg *aws.Config, profile *config.SharedConfig) (aws.Credent
 	if err != nil {
 		return aws.Credentials{}, nil
 	}
+
+	cfg.Credentials = aws.NewCredentialsCache(cred_provider)
 
 	return creds, nil
 }
