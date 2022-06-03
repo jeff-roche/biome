@@ -14,7 +14,7 @@ func GetEnvironmentSetter(key string, node interface{}) (EnvironmentSetter, erro
 			return nil, err
 		}
 	default: // basic types
-		setter = NewBasicEnvironmentSetter(key, fmt.Sprint(node))
+		setter = NewBasicEnvironmentSetter(key, node)
 	}
 
 	return setter, nil

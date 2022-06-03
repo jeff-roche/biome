@@ -1,16 +1,19 @@
 package setters
 
-import "os"
+import (
+	"fmt"
+	"os"
+)
 
 type BasicEnvironmentSetter struct {
 	Key   string
 	Value string
 }
 
-func NewBasicEnvironmentSetter(key string, value string) *BasicEnvironmentSetter {
+func NewBasicEnvironmentSetter(key string, value interface{}) *BasicEnvironmentSetter {
 	return &BasicEnvironmentSetter{
 		Key:   key,
-		Value: value,
+		Value: fmt.Sprint(value),
 	}
 }
 

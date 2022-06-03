@@ -42,7 +42,6 @@ func NewSecretsManagerEnvironmentSetter(key string, config map[string]interface{
 }
 
 func (s SecretsManagerEnvironmentSetter) SetEnv() error {
-
 	// Setup the secrets manager client
 	cfg, err := config.LoadDefaultConfig(
 		context.TODO(),
