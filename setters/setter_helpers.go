@@ -23,7 +23,8 @@ func GetEnvironmentSetter(key string, node interface{}) (EnvironmentSetter, erro
 func getComplexSetter(key string, node map[string]interface{}) (EnvironmentSetter, error) {
 	// Secrets Manager Secret
 	if _, exists := node[SECRETS_MANAGER_ENV_ARN_KEY]; exists {
-		return NewSecretsManagerEnvironmentSetter(key, node), nil
+
+		return NewSecretsManagerEnvironmentSetter(key, node)
 	}
 
 	return nil, fmt.Errorf("unkown environment config for variable '%s'", key)

@@ -1,61 +1,55 @@
 package setters
 
 import (
-	"context"
 	"encoding/json"
 	"fmt"
 	"os"
 
-	"github.com/aws/aws-sdk-go-v2/config"
-
-	sm "github.com/aws/aws-sdk-go-v2/service/secretsmanager"
+	"github.com/jeff-roche/biome/repos"
 )
 
 const SECRETS_MANAGER_ENV_ARN_KEY = "secret_arn"
 const SECRETS_MANAGER_ENV_JSON_KEY = "secret_json_key"
 
+// secretsManagerClientIfc allows us to mock out the call to secrets manager
+
 // SecretsManagerEnvironmentSetter will set an environment variable
 // from a JSON secret stored in AWS Secrets Manager
 type SecretsManagerEnvironmentSetter struct {
-	EnvKey    string // The environment variable key being set
-	ARN       string // The secrets manager secret ARN to reference
-	SecretKey string // The JSON key in the secret to use
+	EnvKey    string                  // The environment variable key being set
+	ARN       string                  // The secrets manager secret ARN to reference
+	SecretKey string                  // The JSON key in the secret to use
+	repo      repos.SecretsManagerIfc // The Secrets manager client
 }
 
 // NewSecretsManagerEnvironmentSetter will generete a SM Setter
-func NewSecretsManagerEnvironmentSetter(key string, config map[string]interface{}) *SecretsManagerEnvironmentSetter {
+func NewSecretsManagerEnvironmentSetter(key string, subkeys map[string]interface{}) (*SecretsManagerEnvironmentSetter, error) {
 	setter := &SecretsManagerEnvironmentSetter{
 		EnvKey: key,
 	}
 
 	// ARN
-	if val, exists := config[SECRETS_MANAGER_ENV_ARN_KEY]; exists {
+	if val, exists := subkeys[SECRETS_MANAGER_ENV_ARN_KEY]; exists {
 		setter.ARN = val.(string)
 	}
 
 	// JSON Key
-	if val, exists := config[SECRETS_MANAGER_ENV_JSON_KEY]; exists {
+	if val, exists := subkeys[SECRETS_MANAGER_ENV_JSON_KEY]; exists {
 		setter.SecretKey = val.(string)
 	}
 
-	return setter
+	// Secrets Manager Repo
+	var err error
+	setter.repo, err = repos.NewSecretsManagerRepo()
+
+	if err != nil {
+		return nil, fmt.Errorf("unable to initialize the secrets manager repository: %v", err)
+	}
+
+	return setter, nil
 }
 
 func (s SecretsManagerEnvironmentSetter) SetEnv() error {
-	// Setup the secrets manager client
-	cfg, err := config.LoadDefaultConfig(
-		context.TODO(),
-		config.WithDefaultRegion(os.Getenv("AWS_DEFAULT_REGION")),
-	)
-	if err != nil {
-		return NewSecretsManagerEnvironmentSetterError(
-			s.EnvKey,
-			fmt.Sprintf("unable to load AWS configuration: %v", err),
-		)
-	}
-
-	client := sm.NewFromConfig(cfg)
-
 	// Get the value from Secrets Manager
 	if s.ARN == "" {
 		return NewSecretsManagerEnvironmentSetterError(
@@ -64,12 +58,7 @@ func (s SecretsManagerEnvironmentSetter) SetEnv() error {
 		)
 	}
 
-	smOut, err := client.GetSecretValue(
-		context.TODO(),
-		&sm.GetSecretValueInput{
-			SecretId: &s.ARN,
-		},
-	)
+	secret, err := s.repo.GetSecretString(s.ARN)
 	if err != nil {
 		return NewSecretsManagerEnvironmentSetterError(
 			s.EnvKey,
@@ -78,7 +67,7 @@ func (s SecretsManagerEnvironmentSetter) SetEnv() error {
 	}
 
 	// Validate the output
-	if *smOut.SecretString == "" {
+	if secret == "" {
 		return NewSecretsManagerEnvironmentSetterError(
 			s.EnvKey,
 			fmt.Sprintf("only string based secrets are currently supported"),
@@ -86,7 +75,7 @@ func (s SecretsManagerEnvironmentSetter) SetEnv() error {
 	}
 
 	// Get value from the JSON key
-	if s.ARN == "" {
+	if s.SecretKey == "" {
 		return NewSecretsManagerEnvironmentSetterError(
 			s.EnvKey,
 			fmt.Sprintf("no JSON key for the secret was specified. Please use '%s' to specify one", SECRETS_MANAGER_ENV_JSON_KEY),
@@ -94,7 +83,7 @@ func (s SecretsManagerEnvironmentSetter) SetEnv() error {
 	}
 
 	var jsonData map[string]string
-	if err := json.Unmarshal([]byte(*smOut.SecretString), &jsonData); err != nil {
+	if err := json.Unmarshal([]byte(secret), &jsonData); err != nil {
 		return NewSecretsManagerEnvironmentSetterError(
 			s.EnvKey,
 			fmt.Sprintf("unable to parse secret '%s' JSON: %v", s.ARN, err),
