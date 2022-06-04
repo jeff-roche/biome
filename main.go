@@ -7,7 +7,7 @@ import (
 	"os"
 	"os/exec"
 
-	"github.com/jeff-roche/biome/parser"
+	"github.com/jeff-roche/biome/src/services"
 )
 
 var Version string
@@ -39,17 +39,15 @@ func main() {
 		log.Fatalln("No command provided")
 	}
 
-	// Load the Biome configuration
-	biome := parser.NewBiomeParser()
-	err := biome.LoadBiome(*biomeName)
-	if err != nil {
-		log.Fatalf("unable to load biome '%s': %v", *biomeName, err)
+	// Setup the biome
+	biomeSvc := services.NewBiomeConfigurationService()
+
+	if err := biomeSvc.LoadBiomeFromDefaults(*biomeName); err != nil {
+		log.Fatalln(err)
 	}
 
-	// Setup and configure the Biome for command execution
-	err = biome.ConfigureBiome()
-	if err != nil {
-		log.Fatalf("unable to configure biome '%s': %v", biome.LoadedBiome.Name, err)
+	if err := biomeSvc.ActivateBiome(); err != nil {
+		log.Fatalln(err)
 	}
 
 	// Execute order 66
@@ -57,8 +55,7 @@ func main() {
 	cmd.Stdout = os.Stdout
 	cmd.Stderr = os.Stderr
 	cmd.Stdin = os.Stdin
-	err = cmd.Run()
-	if err != nil {
+	if err := cmd.Run(); err != nil {
 		log.Fatal(err)
 	}
 }

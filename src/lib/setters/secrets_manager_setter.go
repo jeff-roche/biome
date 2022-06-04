@@ -5,7 +5,7 @@ import (
 	"fmt"
 	"os"
 
-	"github.com/jeff-roche/biome/repos"
+	"github.com/jeff-roche/biome/src/repos"
 )
 
 const SECRETS_MANAGER_ENV_ARN_KEY = "secret_arn"
