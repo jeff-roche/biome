@@ -62,7 +62,7 @@ $ onstaging ./bin/ci/deploy-service.sh
 - :white_check_mark: Add a version command
 - :white_check_mark: Accept all valid yaml file extensions
 - :white_check_mark: Build a CI/CD pipeline
-- Implement some tests
+- :white_check_mark: Implement some tests
 - Loading Environment variables from a .env file
 - Encrypted environment variables via [dragoman](https://github.com/meltwater/dragoman)
 - Potentially switching to [cobra](https://github.com/spf13/cobra) for the cli
