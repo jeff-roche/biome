@@ -87,15 +87,6 @@ func (svc *BiomeConfigurationService) ActivateBiome() error {
 		svc.awsStsRepo.SetAwsEnvs(envCfg)
 	}
 
-	// Any other environment setup commands
-	if len(svc.ActiveBiome.Config.Commands) > 0 {
-		for _, cmd := range svc.ActiveBiome.Config.Commands {
-			parts := strings.Split(cmd, " ")
-
-			cmdr.Run(parts[0], parts[1:]...)
-		}
-	}
-
 	// Loop over the envs and set them
 	for env, val := range svc.ActiveBiome.Config.Environment {
 		setter, err := setters.GetEnvironmentSetter(env, val)
@@ -106,6 +97,15 @@ func (svc *BiomeConfigurationService) ActivateBiome() error {
 		err = setter.SetEnv()
 		if err != nil {
 			return fmt.Errorf("error setting '%s': %v", env, err)
+		}
+	}
+
+	// Any other environment setup commands
+	if len(svc.ActiveBiome.Config.Commands) > 0 {
+		for _, cmd := range svc.ActiveBiome.Config.Commands {
+			parts := strings.Split(cmd, " ")
+
+			cmdr.Run(parts[0], parts[1:]...)
 		}
 	}
 
