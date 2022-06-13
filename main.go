@@ -4,9 +4,8 @@ import (
 	"flag"
 	"fmt"
 	"log"
-	"os"
-	"os/exec"
 
+	"github.com/jeff-roche/biome/src/lib/cmdr"
 	"github.com/jeff-roche/biome/src/services"
 )
 
@@ -51,11 +50,7 @@ func main() {
 	}
 
 	// Execute order 66
-	cmd := exec.Command(cmds[0], cmds[1:]...)
-	cmd.Stdout = os.Stdout
-	cmd.Stderr = os.Stderr
-	cmd.Stdin = os.Stdin
-	if err := cmd.Run(); err != nil {
+	if err := cmdr.Run(cmds[0], cmds[1:]...); err != nil {
 		log.Fatal(err)
 	}
 }

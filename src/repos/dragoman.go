@@ -2,7 +2,7 @@ package repos
 
 import "github.com/meltwater/dragoman/cryptography"
 
-// The interface for the Secrets Manager Repository
+// The interface for the Dragoman Repository
 type DragomanRepoIfc interface {
 	Decrypt(string) (string, error)
 }
