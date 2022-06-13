@@ -27,5 +27,10 @@ func getComplexSetter(key string, node map[string]interface{}) (EnvironmentSette
 		return NewSecretsManagerEnvironmentSetter(key, node)
 	}
 
+	// Dragoman Encrypted Secret
+	if val, exists := node[DRAGOMAN_ENV_KEY]; exists {
+		return NewDragomanEnvironmentSetter(key, val.(string))
+	}
+
 	return nil, fmt.Errorf("unkown environment config for variable '%s'", key)
 }
