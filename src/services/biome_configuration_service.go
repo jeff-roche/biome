@@ -3,7 +3,9 @@ package services
 import (
 	"fmt"
 	"path"
+	"strings"
 
+	"github.com/jeff-roche/biome/src/lib/cmdr"
 	"github.com/jeff-roche/biome/src/lib/fileio"
 	"github.com/jeff-roche/biome/src/lib/setters"
 	"github.com/jeff-roche/biome/src/lib/types"
@@ -95,6 +97,15 @@ func (svc *BiomeConfigurationService) ActivateBiome() error {
 		err = setter.SetEnv()
 		if err != nil {
 			return fmt.Errorf("error setting '%s': %v", env, err)
+		}
+	}
+
+	// Any other environment setup commands
+	if len(svc.ActiveBiome.Config.Commands) > 0 {
+		for _, cmd := range svc.ActiveBiome.Config.Commands {
+			parts := strings.Split(cmd, " ")
+
+			cmdr.Run(parts[0], parts[1:]...)
 		}
 	}
 

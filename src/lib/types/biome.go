@@ -8,5 +8,6 @@ type Biome struct {
 type BiomeConfig struct {
 	Name        string
 	AwsProfile  string                 `yaml:"aws_profile"`
+	Commands    []string               `yaml:"commands"`
 	Environment map[string]interface{} `yaml:"environment"`
 }

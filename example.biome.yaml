@@ -5,8 +5,13 @@ environment: # Additional environment vars to load in
   MY_USEFUL_ENV: "A value I need"
   MY_OTHER_ENV: "Another value I need"
   MY_AWS_SECRET_ENV:
-    secret_arn: "{{ARN}}"
-    secret_json_key: "my_super_secret_key"
+    secret_arn: "{{ARN}}" # Secrets manager ARN
+    secret_json_key: "my_super_secret_key" # JSON key in the secret
+  MY_DRAGOMAN_SECRET_ENV:
+    from_dragoman: "[ENC,...]" # Tells the biome to decrypt this secret
+commands: # Any additional config steps needed, this is the last thing run
+  - kubectx my-k8s-context  
+  - npm run someconfigscript
 
 ---
 

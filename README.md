@@ -27,6 +27,18 @@ environment:
     ...
 ```
 
+### Commands
+Additional commands can be run using the commands setting. Any commands specified will be run as the last steps prior to running the top level command specified when running biome.
+
+```yaml
+# .biome.yaml
+name: my-biome
+commands:
+    - kubectx my-k8s-context
+environment:
+    ...
+```
+
 
 ## Usage
 The most common use case is for use with scripts that need context via environment variables. The need for this tool came about for CI/CD scripts that need AWS context as well as additional environment variables that change based on certain states. This tool will allow you to configure those different states and provide that context to your scripts and pipelines.
@@ -65,5 +77,6 @@ $ onstaging ./bin/ci/deploy-service.sh
 - :white_check_mark: Implement some tests
 - Loading Environment variables from a .env file
 - :white_check_mark: Encrypted environment variables via [dragoman](https://github.com/meltwater/dragoman)
-- Kubernetes context setting
+- :white_check_mark: Kubernetes context setting
+    - *NOTE* this is done through commands
 - Potentially switching to [cobra](https://github.com/spf13/cobra) for the cli
