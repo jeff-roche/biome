@@ -64,5 +64,6 @@ $ onstaging ./bin/ci/deploy-service.sh
 - :white_check_mark: Build a CI/CD pipeline
 - :white_check_mark: Implement some tests
 - Loading Environment variables from a .env file
-- Encrypted environment variables via [dragoman](https://github.com/meltwater/dragoman)
+- :white_check_mark: Encrypted environment variables via [dragoman](https://github.com/meltwater/dragoman)
+- Kubernetes context setting
 - Potentially switching to [cobra](https://github.com/spf13/cobra) for the cli

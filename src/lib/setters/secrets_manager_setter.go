@@ -11,8 +11,6 @@ import (
 const SECRETS_MANAGER_ENV_ARN_KEY = "secret_arn"
 const SECRETS_MANAGER_ENV_JSON_KEY = "secret_json_key"
 
-// secretsManagerClientIfc allows us to mock out the call to secrets manager
-
 // SecretsManagerEnvironmentSetter will set an environment variable
 // from a JSON secret stored in AWS Secrets Manager
 type SecretsManagerEnvironmentSetter struct {
