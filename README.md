@@ -87,7 +87,7 @@ $ onstaging ./bin/ci/deploy-service.sh
 - :white_check_mark: Accept all valid yaml file extensions
 - :white_check_mark: Build a CI/CD pipeline
 - :white_check_mark: Implement some tests
-- Loading Environment variables from a .env file
+- :white_check_mark: Loading Environment variables from a .env file
 - :white_check_mark: Encrypted environment variables via [dragoman](https://github.com/meltwater/dragoman)
 - :white_check_mark: Kubernetes context setting
     - *NOTE* this is done through commands
