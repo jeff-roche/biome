@@ -1,6 +1,12 @@
 # Biome
 Biome is a tool that allows you to configure a temporary environment while running a command. This project was inspired by [awsudo](https://github.com/makethunder/awsudo) but adds additional functionality such as additional environment variables via a `.biome.yaml` configuration file.
 
+## Installation
+Download the release for your target platform from the [releases](https://github.com/jeff-roche/biome/releases/latest) page and add it to your `$PATH`
+
+### Go install
+`go install github.com/jeff-roche/biome`
+
 ## Configuration
 Biome gets its configuration from a `.biome.yaml` file. It will look for the `.biome.yaml` file in the current directory (where the command is run) first. If it can't find the file there, biome will look in the current users home directory for the file.
 
