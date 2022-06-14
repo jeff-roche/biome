@@ -1,5 +1,6 @@
 name: my-staging-biome # Required for identifying this biome
 aws_profile: my_staging_aws_profile # Will set the AWS environment vars
+load_env: example_file.env # Load additional envs from a dotenv file
 environment: # Additional environment vars to load in
   ENVIRONMENT: staging
   MY_USEFUL_ENV: "A value I need"

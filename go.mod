@@ -8,6 +8,7 @@ require (
 	github.com/aws/aws-sdk-go-v2/credentials v1.12.4
 	github.com/aws/aws-sdk-go-v2/service/secretsmanager v1.15.9
 	github.com/aws/aws-sdk-go-v2/service/sts v1.16.6
+	github.com/joho/godotenv v1.4.0
 	github.com/meltwater/dragoman v1.2.2
 	github.com/stretchr/testify v1.7.1
 	gopkg.in/yaml.v3 v3.0.1

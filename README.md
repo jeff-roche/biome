@@ -16,6 +16,18 @@ environment:
     MY_OTHER_ENV: "Another value I need"
 ```
 
+### Dotenv File
+`.env` files can be loaded in by specifying the `load_env` tag. Any vars specified in the `environment` section will override values set in the dotenv file specified.
+
+```yaml
+# .biome.yaml
+name: my-biome
+load_env: my_env_file.env # Specify the name of the file to load in
+environment:
+    MY_USEFUL_ENV: "A value I need"
+    MY_OTHER_ENV: "Another value I need"
+```
+
 ### AWS Environment
 By specifying the `aws_profile` configuration value, Biome will load that [AWS Profile](https://docs.aws.amazon.com/cli/latest/userguide/cli-configure-files.html) from `~/.aws/credentials` and configure the environment variables and a session for this command.
 
