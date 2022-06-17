@@ -16,15 +16,12 @@ func TestBiomeConfigurationService(t *testing.T) {
 	biomeName := "myBiome"
 	testEnv := "MY_TEST_ENV"
 
-	getTestBiome := func() types.Biome {
-		return types.Biome{
-			SourceFile: sourceFilePath,
-			Config: &types.BiomeConfig{
-				Name:       biomeName,
-				AwsProfile: "myProfile",
-				Environment: map[string]interface{}{
-					testEnv: "my_test_env_var",
-				},
+	getTestBiome := func() types.BiomeConfig {
+		return types.BiomeConfig{
+			Name:       biomeName,
+			AwsProfile: "myProfile",
+			Environment: map[string]interface{}{
+				testEnv: "my_test_env_var",
 			},
 		}
 	}
@@ -47,8 +44,7 @@ func TestBiomeConfigurationService(t *testing.T) {
 
 			// Assert
 			assert.Nil(t, err)
-			assert.True(t, assert.ObjectsAreEqual(testBiome.Config, testSvc.ActiveBiome.Config))
-			assert.Equal(t, testBiome.SourceFile, testSvc.ActiveBiome.SourceFile)
+			assert.True(t, assert.ObjectsAreEqual(testBiome, *testSvc.ActiveBiome))
 		})
 
 		t.Run("should report an error if the biome can not be found", func(t *testing.T) {
@@ -59,7 +55,7 @@ func TestBiomeConfigurationService(t *testing.T) {
 			}
 			testErr := fmt.Errorf("biome not found")
 
-			mockRepo.On("FindBiome", biomeName, mock.Anything).Return(&types.Biome{}, testErr)
+			mockRepo.On("FindBiome", biomeName, mock.Anything).Return(&types.BiomeConfig{}, testErr)
 
 			// Act
 			err := testSvc.LoadBiomeFromDefaults(biomeName)
@@ -88,8 +84,7 @@ func TestBiomeConfigurationService(t *testing.T) {
 
 			// Assert
 			assert.Nil(t, err)
-			assert.True(t, assert.ObjectsAreEqual(testBiome.Config, testSvc.ActiveBiome.Config))
-			assert.Equal(t, testBiome.SourceFile, testSvc.ActiveBiome.SourceFile)
+			assert.True(t, assert.ObjectsAreEqual(testBiome, *testSvc.ActiveBiome))
 		})
 
 		t.Run("should report an error if the biome can not be found", func(t *testing.T) {
@@ -100,7 +95,7 @@ func TestBiomeConfigurationService(t *testing.T) {
 			}
 			testErr := fmt.Errorf("biome not found")
 
-			mockRepo.On("FindBiome", biomeName, mock.Anything).Return(&types.Biome{}, testErr)
+			mockRepo.On("FindBiome", biomeName, mock.Anything).Return(&types.BiomeConfig{}, testErr)
 
 			// Act
 			err := testSvc.LoadBiomeFromFile(biomeName, sourceFilePath)
@@ -122,7 +117,7 @@ func TestBiomeConfigurationService(t *testing.T) {
 				ActiveBiome: &b,
 			}
 
-			b.Config.AwsProfile = ""
+			b.AwsProfile = ""
 
 			t.Cleanup(func() {
 				os.Unsetenv(testEnv)
@@ -133,13 +128,13 @@ func TestBiomeConfigurationService(t *testing.T) {
 
 			// Assert
 			assert.Nil(t, err)
-			assert.Equal(t, b.Config.Environment[testEnv], os.Getenv(testEnv))
+			assert.Equal(t, b.Environment[testEnv], os.Getenv(testEnv))
 		})
 
 		t.Run("should load the AWS environment", func(t *testing.T) {
 			// Assemble
 			b := getTestBiome()
-			b.Config.Environment = map[string]interface{}{}
+			b.Environment = map[string]interface{}{}
 			mockRepo := repos.MockAwsStsRepository{}
 
 			testSvc := &BiomeConfigurationService{
@@ -147,7 +142,7 @@ func TestBiomeConfigurationService(t *testing.T) {
 				awsStsRepo:  &mockRepo,
 			}
 
-			mockRepo.On("ConfigureSession", b.Config.AwsProfile).Return(&types.AwsEnvConfig{}, nil)
+			mockRepo.On("ConfigureSession", b.AwsProfile).Return(&types.AwsEnvConfig{}, nil)
 			mockRepo.On("SetAwsEnvs", mock.Anything).Return()
 
 			// Act
@@ -173,7 +168,7 @@ func TestBiomeConfigurationService(t *testing.T) {
 			b := getTestBiome()
 			mockRepo := repos.MockAwsStsRepository{}
 			testError := fmt.Errorf("my dummy error")
-			mockRepo.On("ConfigureSession", b.Config.AwsProfile).Return(&types.AwsEnvConfig{}, testError)
+			mockRepo.On("ConfigureSession", b.AwsProfile).Return(&types.AwsEnvConfig{}, testError)
 			mockRepo.On("SetAwsEnvs", mock.Anything).Return()
 
 			testSvc := &BiomeConfigurationService{

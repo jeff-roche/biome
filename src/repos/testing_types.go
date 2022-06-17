@@ -9,9 +9,9 @@ type MockBiomeFileParser struct {
 	mock.Mock
 }
 
-func (m MockBiomeFileParser) FindBiome(biomeName string, searchFiles []string) (*types.Biome, error) {
+func (m MockBiomeFileParser) FindBiome(biomeName string, searchFiles []string) (*types.BiomeConfig, error) {
 	args := m.Called(biomeName, searchFiles)
-	return args.Get(0).(*types.Biome), args.Error(1)
+	return args.Get(0).(*types.BiomeConfig), args.Error(1)
 }
 
 type MockAwsStsRepository struct {
