@@ -4,7 +4,8 @@ load_env: example_file.env # Load additional envs from a dotenv file
 environment: # Additional environment vars to load in
   ENVIRONMENT: staging
   MY_USEFUL_ENV: "A value I need"
-  MY_OTHER_ENV: "Another value I need"
+  CLI_ENV_VAR: # Get the variable from the CLI
+    from_cli: true
   MY_AWS_SECRET_ENV:
     secret_arn: "{{ARN}}" # Secrets manager ARN
     secret_json_key: "my_super_secret_key" # JSON key in the secret
