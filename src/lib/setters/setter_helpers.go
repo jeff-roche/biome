@@ -2,6 +2,7 @@ package setters
 
 import (
 	"fmt"
+	"os"
 )
 
 func GetEnvironmentSetter(key string, node interface{}) (EnvironmentSetter, error) {
@@ -30,6 +31,15 @@ func getComplexSetter(key string, node map[string]interface{}) (EnvironmentSette
 	// Dragoman Encrypted Secret
 	if val, exists := node[DRAGOMAN_ENV_KEY]; exists {
 		return NewDragomanEnvironmentSetter(key, val.(string))
+	}
+
+	// CLI Input
+	if val, exists := node[CLI_ENVIRONMENT_SETTER_KEY]; exists {
+		if val.(bool) {
+			return NewCLIEnvironmentSetter(key, os.Stdin)
+		} else {
+			return nil, fmt.Errorf("invalid value for %s: %v", CLI_ENVIRONMENT_SETTER_KEY, val)
+		}
 	}
 
 	return nil, fmt.Errorf("unkown environment config for variable '%s'", key)
