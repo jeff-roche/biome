@@ -17,7 +17,7 @@ var defaultFileNames = []string{".biome.yaml", ".biome.yml"}
 
 // BiomeConfigurationService handles the loading and activation of biomes
 type BiomeConfigurationService struct {
-	ActiveBiome    *types.Biome
+	ActiveBiome    *types.BiomeConfig
 	configFileRepo repos.BiomeFileParserIfc
 	awsStsRepo     repos.AwsStsRepositoryIfc
 }
@@ -85,7 +85,7 @@ func (svc *BiomeConfigurationService) ActivateBiome() error {
 	}
 
 	// Dot Env
-	if err := svc.loadFromEnv(svc.ActiveBiome.Config.ExternalEnvFile); err != nil {
+	if err := svc.loadFromEnv(svc.ActiveBiome.ExternalEnvFile); err != nil {
 		return err
 	}
 
@@ -104,8 +104,8 @@ func (svc *BiomeConfigurationService) ActivateBiome() error {
 
 // loadAws will load in the AWS profile if one was specified
 func (svc *BiomeConfigurationService) loadAws() error {
-	if svc.ActiveBiome.Config.AwsProfile != "" {
-		envCfg, err := svc.awsStsRepo.ConfigureSession(svc.ActiveBiome.Config.AwsProfile)
+	if svc.ActiveBiome.AwsProfile != "" {
+		envCfg, err := svc.awsStsRepo.ConfigureSession(svc.ActiveBiome.AwsProfile)
 		if err != nil {
 			return err
 		}
@@ -128,8 +128,8 @@ func (svc *BiomeConfigurationService) loadFromEnv(fname string) error {
 		for key, val := range loadedEnvs {
 
 			// Only save the key if one wasn't specified in the biome config
-			if _, exists := svc.ActiveBiome.Config.Environment[key]; !exists {
-				svc.ActiveBiome.Config.Environment[key] = val
+			if _, exists := svc.ActiveBiome.Environment[key]; !exists {
+				svc.ActiveBiome.Environment[key] = val
 			}
 		}
 	}
@@ -140,7 +140,7 @@ func (svc *BiomeConfigurationService) loadFromEnv(fname string) error {
 // loadEnvs will parse all the envs in the Environment map and load them into memory
 func (svc *BiomeConfigurationService) loadEnvs() error {
 	// Loop over the envs and set them
-	for env, val := range svc.ActiveBiome.Config.Environment {
+	for env, val := range svc.ActiveBiome.Environment {
 		setter, err := setters.GetEnvironmentSetter(env, val)
 		if err != nil {
 			return fmt.Errorf("error setting '%s': %v", env, err)
@@ -157,8 +157,8 @@ func (svc *BiomeConfigurationService) loadEnvs() error {
 
 // runSetupCommands will run any command line commands specified in the biome configuration
 func (svc *BiomeConfigurationService) runSetupCommands() error {
-	if len(svc.ActiveBiome.Config.Commands) > 0 {
-		for _, cmd := range svc.ActiveBiome.Config.Commands {
+	if len(svc.ActiveBiome.Commands) > 0 {
+		for _, cmd := range svc.ActiveBiome.Commands {
 			parts := strings.Split(cmd, " ")
 
 			if err := cmdr.Run(parts[0], parts[1:]...); err != nil {
