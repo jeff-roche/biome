@@ -87,6 +87,8 @@ $ onstaging ./bin/ci/deploy-service.sh
 ```
 
 ## Future Plans
+- Allow inhereting from other biomes in the same file
+- Allow setting an environment variable from stdin
 - :white_check_mark: Implement goreleaser for binary building
     - :white_check_mark: Use semantic versioning
 - :white_check_mark: Add a version command
