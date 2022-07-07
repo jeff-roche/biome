@@ -87,7 +87,9 @@ $ onstaging ./bin/ci/deploy-service.sh
 ```
 
 ## Future Plans
-- Allow inhereting from other biomes in the same file
+- Allow CLI input to be a secret (for passwords)
+- Potentially switching to [cobra](https://github.com/spf13/cobra) for the cli
+- :white_check_mark: Allow inhereting from other biomes in the same file
 - :white_check_mark: Allow setting an environment variable from stdin
 - :white_check_mark: Implement goreleaser for binary building
     - :white_check_mark: Use semantic versioning
@@ -99,4 +101,3 @@ $ onstaging ./bin/ci/deploy-service.sh
 - :white_check_mark: Encrypted environment variables via [dragoman](https://github.com/meltwater/dragoman)
 - :white_check_mark: Kubernetes context setting
     - *NOTE* this is done through commands
-- Potentially switching to [cobra](https://github.com/spf13/cobra) for the cli
