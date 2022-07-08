@@ -34,12 +34,16 @@ func getComplexSetter(key string, node map[string]interface{}) (EnvironmentSette
 	}
 
 	// CLI Input
-	if val, exists := node[CLI_ENVIRONMENT_SETTER_KEY]; exists {
-		if val.(bool) {
-			return NewCLIEnvironmentSetter(key, os.Stdin)
+	if val, exists := node[CLI_ENVIRONMENT_SETTER_KEY]; exists && val.(bool) {
+		var isSecret bool
+
+		if _, exists := node[CLI_ENVIRONMENT_SECRET_SETTER_KEY]; exists {
+			isSecret = node[CLI_ENVIRONMENT_SECRET_SETTER_KEY].(bool)
 		} else {
-			return nil, fmt.Errorf("invalid value for %s: %v", CLI_ENVIRONMENT_SETTER_KEY, val)
+			isSecret = false
 		}
+
+		return NewCLIEnvironmentSetter(key, os.Stdin, isSecret)
 	}
 
 	return nil, fmt.Errorf("unkown environment config for variable '%s'", key)
