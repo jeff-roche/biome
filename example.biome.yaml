@@ -6,6 +6,7 @@ environment: # Additional environment vars to load in
   MY_USEFUL_ENV: "A value I need"
   CLI_ENV_VAR: # Get the variable from the CLI
     from_cli: true
+    is_secret: true # Specifies a CLI Secret (won't save to your cli history)
   MY_AWS_SECRET_ENV:
     secret_arn: "{{ARN}}" # Secrets manager ARN
     secret_json_key: "my_super_secret_key" # JSON key in the secret
