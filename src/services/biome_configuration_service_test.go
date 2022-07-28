@@ -114,7 +114,8 @@ func TestBiomeConfigurationService(t *testing.T) {
 			b := getTestBiome()
 
 			testSvc := &BiomeConfigurationService{
-				ActiveBiome: &b,
+				ActiveBiome:    &b,
+				configuredEnvs: map[string]string{},
 			}
 
 			b.AwsProfile = ""
@@ -129,6 +130,29 @@ func TestBiomeConfigurationService(t *testing.T) {
 			// Assert
 			assert.Nil(t, err)
 			assert.Equal(t, b.Environment[testEnv], os.Getenv(testEnv))
+		})
+
+		t.Run("should save the environment variables to the configuredEnvs map", func(t *testing.T) {
+			// Assemble
+			b := getTestBiome()
+
+			testSvc := &BiomeConfigurationService{
+				ActiveBiome:    &b,
+				configuredEnvs: map[string]string{},
+			}
+
+			b.AwsProfile = ""
+
+			t.Cleanup(func() {
+				os.Unsetenv(testEnv)
+			})
+
+			// Act
+			err := testSvc.ActivateBiome()
+
+			// Assert
+			assert.Nil(t, err)
+			assert.Equal(t, b.Environment[testEnv], testSvc.configuredEnvs[testEnv])
 		})
 
 		t.Run("should load the AWS environment", func(t *testing.T) {

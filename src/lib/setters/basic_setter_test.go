@@ -31,9 +31,10 @@ func TestBasicSetter(t *testing.T) {
 	t.Run("should set the env", func(t *testing.T) {
 		testVal := "BAZ"
 		s := NewBasicEnvironmentSetter(testEnvKey, testVal)
-		err := s.SetEnv()
+		val, err := s.SetEnv()
 
 		assert.Nil(t, err)
+		assert.Equal(t, val, testVal)
 		assert.Equal(t, os.Getenv(testEnvKey), testVal)
 	})
 

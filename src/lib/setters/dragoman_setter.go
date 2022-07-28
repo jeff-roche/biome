@@ -30,15 +30,15 @@ func NewDragomanEnvironmentSetter(key string, val string) (*DragomanEnvironmentS
 	}, nil
 }
 
-func (s DragomanEnvironmentSetter) SetEnv() error {
+func (s DragomanEnvironmentSetter) SetEnv() (string, error) {
 	dec, err := s.repo.Decrypt(s.Encrypted)
 	if err != nil {
-		return err
+		return "", err
 	}
 
 	if s.EnvKey == "" {
-		return fmt.Errorf("no environment key specified")
+		return "", fmt.Errorf("no environment key specified")
 	}
 
-	return os.Setenv(s.EnvKey, dec)
+	return dec, os.Setenv(s.EnvKey, dec)
 }

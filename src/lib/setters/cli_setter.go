@@ -42,8 +42,8 @@ func NewCLIEnvironmentSetter(key string, rd io.Reader, isSecret bool) (*CLIEnvir
 	}, nil
 }
 
-func (s CLIEnvironmentSetter) SetEnv() error {
-	return os.Setenv(s.Key, s.Value)
+func (s CLIEnvironmentSetter) SetEnv() (string, error) {
+	return s.Value, os.Setenv(s.Key, s.Value)
 }
 
 func getCliInput(rd io.Reader) (string, error) {

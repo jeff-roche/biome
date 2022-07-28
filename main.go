@@ -1,18 +1,14 @@
 package main
 
 import (
-	"flag"
-	"fmt"
-	"log"
-
-	"github.com/jeff-roche/biome/src/lib/cmdr"
+	"github.com/jeff-roche/biome/src/cmd"
 	"github.com/jeff-roche/biome/src/services"
 )
 
 var Version string
 
 func main() {
-	var versionFlag bool
+	/*var versionFlag bool
 	flag.BoolVar(&versionFlag, "version", false, "Display the current version of this utility")
 	flag.BoolVar(&versionFlag, "v", false, "Display the current version of this utility")
 
@@ -36,21 +32,10 @@ func main() {
 
 	if len(cmds) < 1 {
 		log.Fatalln("No command provided")
-	}
+	}*/
 
 	// Setup the biome
 	biomeSvc := services.NewBiomeConfigurationService()
 
-	if err := biomeSvc.LoadBiomeFromDefaults(*biomeName); err != nil {
-		log.Fatalln(err)
-	}
-
-	if err := biomeSvc.ActivateBiome(); err != nil {
-		log.Fatalln(err)
-	}
-
-	// Execute order 66
-	if err := cmdr.Run(cmds[0], cmds[1:]...); err != nil {
-		log.Fatal(err)
-	}
+	cmd.Execute(biomeSvc)
 }

@@ -47,10 +47,10 @@ func NewSecretsManagerEnvironmentSetter(key string, subkeys map[string]interface
 	return setter, nil
 }
 
-func (s SecretsManagerEnvironmentSetter) SetEnv() error {
+func (s SecretsManagerEnvironmentSetter) SetEnv() (string, error) {
 	// Get the value from Secrets Manager
 	if s.ARN == "" {
-		return NewSecretsManagerEnvironmentSetterError(
+		return "", NewSecretsManagerEnvironmentSetterError(
 			s.EnvKey,
 			fmt.Sprintf("no Secrets Manager ARN specified. Please use '%s' to specify one", SECRETS_MANAGER_ENV_ARN_KEY),
 		)
@@ -58,7 +58,7 @@ func (s SecretsManagerEnvironmentSetter) SetEnv() error {
 
 	secret, err := s.repo.GetSecretString(s.ARN)
 	if err != nil {
-		return NewSecretsManagerEnvironmentSetterError(
+		return "", NewSecretsManagerEnvironmentSetterError(
 			s.EnvKey,
 			fmt.Sprintf("unable to load secret '%s': %v", s.ARN, err),
 		)
@@ -66,7 +66,7 @@ func (s SecretsManagerEnvironmentSetter) SetEnv() error {
 
 	// Validate the output
 	if secret == "" {
-		return NewSecretsManagerEnvironmentSetterError(
+		return "", NewSecretsManagerEnvironmentSetterError(
 			s.EnvKey,
 			fmt.Sprintf("only string based secrets are currently supported"),
 		)
@@ -74,7 +74,7 @@ func (s SecretsManagerEnvironmentSetter) SetEnv() error {
 
 	// Get value from the JSON key
 	if s.SecretKey == "" {
-		return NewSecretsManagerEnvironmentSetterError(
+		return "", NewSecretsManagerEnvironmentSetterError(
 			s.EnvKey,
 			fmt.Sprintf("no JSON key for the secret was specified. Please use '%s' to specify one", SECRETS_MANAGER_ENV_JSON_KEY),
 		)
@@ -82,23 +82,23 @@ func (s SecretsManagerEnvironmentSetter) SetEnv() error {
 
 	var jsonData map[string]string
 	if err := json.Unmarshal([]byte(secret), &jsonData); err != nil {
-		return NewSecretsManagerEnvironmentSetterError(
+		return "", NewSecretsManagerEnvironmentSetterError(
 			s.EnvKey,
 			fmt.Sprintf("unable to parse secret '%s' JSON: %v", s.ARN, err),
 		)
 	}
 
 	// Check and set the key
-	if val, exists := jsonData[s.SecretKey]; exists {
-		os.Setenv(s.EnvKey, val)
-	} else {
-		return NewSecretsManagerEnvironmentSetterError(
+	val, exists := jsonData[s.SecretKey]
+
+	if !exists {
+		return "", NewSecretsManagerEnvironmentSetterError(
 			s.EnvKey,
 			fmt.Sprintf("secret '%s' does not contain JSON key '%s'", s.ARN, s.SecretKey),
 		)
 	}
 
-	return nil
+	return val, os.Setenv(s.EnvKey, val)
 }
 
 type SecretsManagerEnvironmentSetterError struct {

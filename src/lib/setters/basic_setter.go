@@ -17,6 +17,6 @@ func NewBasicEnvironmentSetter(key string, value interface{}) *BasicEnvironmentS
 	}
 }
 
-func (s BasicEnvironmentSetter) SetEnv() error {
-	return os.Setenv(s.Key, s.Value)
+func (s BasicEnvironmentSetter) SetEnv() (string, error) {
+	return s.Value, os.Setenv(s.Key, s.Value)
 }
