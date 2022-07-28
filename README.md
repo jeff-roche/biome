@@ -88,6 +88,7 @@ $ onstaging ./bin/ci/deploy-service.sh
 
 ## Future Plans
 - Export loaded variables to a dotenv file
+- Have goreleaser create a docker image and publish to ghcr
 - Potentially switching to [cobra](https://github.com/spf13/cobra) for the cli
 - :white_check_mark: Allow CLI input to be a secret (for passwords)
 - :white_check_mark: Allow inhereting from other biomes in the same file
