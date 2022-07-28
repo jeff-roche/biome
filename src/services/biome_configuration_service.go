@@ -20,6 +20,7 @@ type BiomeConfigurationService struct {
 	ActiveBiome    *types.BiomeConfig
 	configFileRepo repos.BiomeFileParserIfc
 	awsStsRepo     repos.AwsStsRepositoryIfc
+	configuredEnvs map[string]string
 }
 
 // NewBiomeConfigurationService is a builder function to generate the service
@@ -27,6 +28,7 @@ func NewBiomeConfigurationService() *BiomeConfigurationService {
 	return &BiomeConfigurationService{
 		configFileRepo: repos.NewBiomeFileParser(),
 		awsStsRepo:     repos.NewAwsStsRepository(),
+		configuredEnvs: make(map[string]string),
 	}
 }
 
@@ -71,6 +73,11 @@ func (svc *BiomeConfigurationService) LoadBiomeFromFile(biomeName string, fpath 
 	svc.ActiveBiome = biome
 
 	return nil
+}
+
+// SaveBiomeToFile will export the loaded environment variables to the file specified
+func (svc BiomeConfigurationService) SaveBiomeToFile(fpath string) error {
+	return godotenv.Write(svc.configuredEnvs, fpath)
 }
 
 // Activate biome will load up the configuration and run any setup commands before running the specified program
@@ -146,10 +153,13 @@ func (svc *BiomeConfigurationService) loadEnvs() error {
 			return fmt.Errorf("error setting '%s': %v", env, err)
 		}
 
-		err = setter.SetEnv()
+		raw_val, err := setter.SetEnv()
 		if err != nil {
 			return fmt.Errorf("error setting '%s': %v", env, err)
 		}
+
+		// Save off the envs we configured
+		svc.configuredEnvs[env] = raw_val
 	}
 
 	return nil

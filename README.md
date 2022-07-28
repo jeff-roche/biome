@@ -63,12 +63,15 @@ The most common use case is for use with scripts that need context via environme
 
 ### Via direct command
 ```bash
-$ biome -b my-biome ${COMMAND}
+$ biome run -b my-biome ${COMMAND}
 ```
 
 - `-b` is a required parameter that specifies the name of the biome you want to use
     - In this case, the name of the biome is `my-biome`
 - `${COMMAND}` specifies the command you want to run (ex: `env`, `ls -al`, ``, etc.)
+
+> **NOTE** if you want to add command line flags to the command being run, you need to preface it with `--`
+    *Example*: `biome run -b my-biome -- ls -al`
 
 ### Via bash alias
 A way that makes Biome a little more convenient is to alias your profiles via bash aliases and use them that way.
@@ -76,8 +79,8 @@ A way that makes Biome a little more convenient is to alias your profiles via ba
 This configuration:
 ```bash
 # ~/.bashrc
-alias onstaging='biome -b staging-biome'
-alias onprod='biome -b production-biome'
+alias onstaging='biome run -b staging-biome'
+alias onprod='biome run -b production-biome'
 ```
 
 Allows the following command to be run on the command line:
@@ -86,10 +89,20 @@ Allows the following command to be run on the command line:
 $ onstaging ./bin/ci/deploy-service.sh
 ```
 
+### Exporting to a dotenv file
+You can export the loaded environment variables to a dotenv file with the following command:
+```bash
+$ biome save -b my-biome -f my.env
+```
+
+> **NOTE**: If no input file is specified with `-f`, `./.env` will be used as the file path
+
+> **NOTE**: AWS environment variables are not currently exported
+
 ## Future Plans
-- Export loaded variables to a dotenv file
 - Have goreleaser create a docker image and publish to ghcr
-- Potentially switching to [cobra](https://github.com/spf13/cobra) for the cli
+- :white_check_mark: Export loaded variables to a dotenv file
+- :white_check_mark: Switch to [cobra](https://github.com/spf13/cobra) for the cli
 - :white_check_mark: Allow CLI input to be a secret (for passwords)
 - :white_check_mark: Allow inhereting from other biomes in the same file
 - :white_check_mark: Allow setting an environment variable from stdin

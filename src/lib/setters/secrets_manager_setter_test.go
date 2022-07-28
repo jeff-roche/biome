@@ -87,10 +87,11 @@ func TestSecretsManagerSetter(t *testing.T) {
 		})
 
 		// Act
-		err := setter.SetEnv()
+		val, err := setter.SetEnv()
 
 		// Assert
 		assert.Nil(t, err)
+		assert.Equal(t, testJSONValue, val)
 		assert.Equal(t, testJSONValue, os.Getenv(testEnv))
 	})
 
@@ -100,10 +101,11 @@ func TestSecretsManagerSetter(t *testing.T) {
 		setter.ARN = ""
 
 		// Act
-		err := setter.SetEnv()
+		val, err := setter.SetEnv()
 
 		// Assert
 		assert.NotNil(t, err)
+		assert.Equal(t, val, "")
 		assert.ErrorContains(t, err, "ARN")
 	})
 
@@ -115,9 +117,10 @@ func TestSecretsManagerSetter(t *testing.T) {
 		setter := getTestSetter(mockRepo)
 
 		// Act
-		err := setter.SetEnv()
+		val, err := setter.SetEnv()
 
 		// Assert
+		assert.Equal(t, val, "")
 		assert.ErrorContains(t, err, customErr)
 	})
 
@@ -128,10 +131,11 @@ func TestSecretsManagerSetter(t *testing.T) {
 		setter := getTestSetter(mockRepo)
 
 		// Act
-		err := setter.SetEnv()
+		val, err := setter.SetEnv()
 
 		// Assert
 		assert.NotNil(t, err)
+		assert.Equal(t, val, "")
 	})
 
 	t.Run("should report an error if no JSON key is provided", func(t *testing.T) {
@@ -142,10 +146,11 @@ func TestSecretsManagerSetter(t *testing.T) {
 		setter.SecretKey = ""
 
 		// Act
-		err := setter.SetEnv()
+		val, err := setter.SetEnv()
 
 		// Assert
 		assert.NotNil(t, err)
+		assert.Equal(t, val, "")
 		assert.ErrorContains(t, err, "JSON")
 	})
 
@@ -156,10 +161,11 @@ func TestSecretsManagerSetter(t *testing.T) {
 		setter := getTestSetter(mockRepo)
 
 		// Act
-		err := setter.SetEnv()
+		val, err := setter.SetEnv()
 
 		// Assert
 		assert.NotNil(t, err)
+		assert.Equal(t, val, "")
 		assert.ErrorContains(t, err, "unable to parse secret")
 	})
 
@@ -171,10 +177,11 @@ func TestSecretsManagerSetter(t *testing.T) {
 		setter.SecretKey = "invalidKey"
 
 		// Act
-		err := setter.SetEnv()
+		val, err := setter.SetEnv()
 
 		// Assert
 		assert.NotNil(t, err)
+		assert.Equal(t, val, "")
 		assert.ErrorContains(t, err, "does not contain JSON key")
 	})
 }
