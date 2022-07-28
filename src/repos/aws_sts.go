@@ -2,6 +2,7 @@ package repos
 
 import (
 	"context"
+	"fmt"
 	"os"
 
 	"github.com/aws/aws-sdk-go-v2/aws"
@@ -10,6 +11,8 @@ import (
 	"github.com/aws/aws-sdk-go-v2/service/sts"
 	"github.com/jeff-roche/biome/src/lib/types"
 )
+
+var awsProfileName string = ""
 
 type AwsStsRepositoryIfc interface {
 	ConfigureSession(profile string) (*types.AwsEnvConfig, error)
@@ -67,6 +70,8 @@ func (repo AwsStsRepository) loadProfile(profile string) (config.SharedConfig, e
 }
 
 func (repo AwsStsRepository) loadAwsConfig(profCfg *config.SharedConfig) (aws.Config, error) {
+	awsProfileName = profCfg.Profile
+
 	return config.LoadDefaultConfig(
 		context.TODO(),
 		config.WithSharedConfigProfile(profCfg.Profile),
@@ -75,7 +80,7 @@ func (repo AwsStsRepository) loadAwsConfig(profCfg *config.SharedConfig) (aws.Co
 			func(aro *stscreds.AssumeRoleOptions) {
 				if profCfg.MFASerial != "" {
 					aro.SerialNumber = &profCfg.MFASerial
-					aro.TokenProvider = stscreds.StdinTokenProvider
+					aro.TokenProvider = CustomStdinTokenProvider
 				}
 			},
 		),
@@ -98,4 +103,12 @@ func (repo AwsStsRepository) setupAwsSession(cfg *aws.Config, profile *config.Sh
 	cfg.Credentials = aws.NewCredentialsCache(cred_provider)
 
 	return creds, nil
+}
+
+func CustomStdinTokenProvider() (string, error) {
+	var v string
+	fmt.Printf("MFA token for AWS profile '%s': ", awsProfileName)
+	_, err := fmt.Scanln(&v)
+
+	return v, err
 }

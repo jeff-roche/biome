@@ -101,6 +101,7 @@ $ biome save -b my-biome -f my.env
 
 ## Future Plans
 - Have goreleaser create a docker image and publish to ghcr
+- :white_check_mark: Custom MFA token message for AWS profiles
 - :white_check_mark: Export loaded variables to a dotenv file
 - :white_check_mark: Switch to [cobra](https://github.com/spf13/cobra) for the cli
 - :white_check_mark: Allow CLI input to be a secret (for passwords)
